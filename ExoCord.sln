@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34408.163
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExoCord", "ExoCord\ExoCord.csproj", "{36A19721-FC53-4D8C-9E03-17BB5FBC982A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{3E2D949A-5544-426E-897F-AA94CBE0BAAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{36A19721-FC53-4D8C-9E03-17BB5FBC982A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A19721-FC53-4D8C-9E03-17BB5FBC982A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A19721-FC53-4D8C-9E03-17BB5FBC982A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A19721-FC53-4D8C-9E03-17BB5FBC982A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E2D949A-5544-426E-897F-AA94CBE0BAAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E2D949A-5544-426E-897F-AA94CBE0BAAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E2D949A-5544-426E-897F-AA94CBE0BAAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E2D949A-5544-426E-897F-AA94CBE0BAAA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {155F6966-ACD7-436C-B728-6A561DAB72B3}
+	EndGlobalSection
+EndGlobal
