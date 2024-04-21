@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Network\ChannelManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Network\ChannelManager.cs" />
+  </ItemGroup>
+
 </Project>
