@@ -6,7 +6,9 @@ namespace Packets {
     [Flags] public enum HeaderFlags: ushort {
         NONE = 0,
         RESULT = 1,
-        CHANNEL = 2,
+        CREATE_CHANNEL = 2,
+        CLOSE_CHANNEL = 4,
+        SEND_CHANNEL = 8,
         // EXTRA data?
     }
 
@@ -25,7 +27,7 @@ namespace Packets {
         [MarshalAs(UnmanagedType.U1)]
         public int m_timeoutInSeconds; // Used to know how long a packet can expect a result 
 
-        public Header(ushort len,  ushort id, ushort flags = 0, uint packetId = 0, byte timeoutInSeconds = 0) {
+        public Header(ushort len,  ushort id, ushort flags = 0, uint packetId = 0, int timeoutInSeconds = 0) {
             m_len = len;
             m_id = id;
             m_flags = flags;

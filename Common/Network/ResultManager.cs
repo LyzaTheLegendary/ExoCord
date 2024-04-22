@@ -1,4 +1,5 @@
 ﻿using Casting;
+using Common;
 using Packets;
 using System.Collections.Concurrent;
 
@@ -9,6 +10,9 @@ namespace Network {
     }
     public class ResultManager {
         ConcurrentDictionary<uint, ResultEntry> m_resultCache = new();
+        IdPool pool = new();
+
+        public uint GetNewId() => pool.GetNewId();
 
         public void AddResultTracker(uint id,  int timeoutInSeconds, Action<ResultCode> action) {
             if(m_resultCache.Count > 100) {
@@ -25,14 +29,16 @@ namespace Network {
             if (!m_resultCache.TryRemove(id, out ResultEntry result))
                 return;
 
+            pool.ReturnId(id);
             result.action.Invoke((ResultCode)resultData.GetStruct<ushort>());
         }
 
         private void CleanUpCache() {
-            int time = DateTime.Now.Millisecond;
+            int time = DateTime.Now.Millisecond  / 60;
             foreach (var kvp in m_resultCache) {
-                if ((time / 60) - kvp.Value.timeoutInSeconds > 0) {
+                if (time - kvp.Value.timeoutInSeconds > 0) {
                     m_resultCache.Remove(kvp.Key, out _);
+                    pool.ReturnId(kvp.Key);
                 }
             }
             

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace Common.Network
+using Packets;
+namespace Network
 {
     class ChannelManager
     {
@@ -15,5 +15,15 @@ namespace Common.Network
          */
 
         // Channel creation a channel should be returned via lambda just like the result packet
+        public void CreateChannel() {
+
+        }
+
+        public void CloseChannel() {
+
+        }
+        public void SendChannel(ushort id, Msg msg) {
+
+        }
     }
 }

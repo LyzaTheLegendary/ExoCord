@@ -13,6 +13,8 @@ namespace Packets {
         public ushort GetId() => id;
         public int GetSize() => data.Length;
 
+        public byte[] GetBytes() => data;
+
         public T GetStruct<T>() where T : struct 
            => data.BitCast<T>();
         

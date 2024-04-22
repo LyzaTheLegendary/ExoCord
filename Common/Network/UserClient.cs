@@ -1,9 +1,11 @@
-﻿using Packets;
+﻿using Casting;
+using Packets;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
+using System.Reflection.PortableExecutable;
 
 namespace Network {
-    public readonly struct Message {
+    public readonly struct Message { // add some kind of priority? this way I could sort things 
         public readonly UserClient client;
         public readonly Header header; // should be header instead
         public readonly Msg packet;
@@ -25,6 +27,8 @@ namespace Network {
         private readonly XAddr m_address;
         private readonly Socket m_socket;
         private readonly ResultManager resultManager = new();
+
+        private bool IsServer { get => m_id != 0; }
 
         public UserClient(uint id, Socket remoteSocket, Action<UserClient> onConnect, Action<UserClient> onDisconnect, Action<ushort, Msg> onMessage) {
             m_address = new XAddr(remoteSocket.RemoteEndPoint!.ToString()!);
@@ -56,17 +60,26 @@ namespace Network {
         public uint GetId() => m_id;
 
         // Normal message
-        public void PendMessage(Header header, Msg message) 
-            => MessagePipe.Add(new Message(this, header, message));
+        public void PendMessage(ushort id, Msg message) {
+            Header header = new Header((ushort)message.GetSize(), id);
+            MessagePipe.Add(new Message(this, header, message));
+        }
         
         // With a handler for the respones
         public void PendMessage(ushort id, Msg message, Action<ResultCode> result) {
-
+            Header header = new Header((ushort)message.GetSize(),id, (ushort)HeaderFlags.RESULT,resultManager.GetNewId(), (DateTime.Now.Millisecond / 60));
+            MessagePipe.Add(new Message(this, header, message));
         }
 
         // Request a channel, Important to keep track of results so it can be removed if failed
         public void CreateChannel(uint channelId, byte timeoutInSeconds, Action<ResultCode> result) { 
-        
+            // As user it requests
+            // As server it creates
+        }
+
+        public void DestroyChannel(uint channelId) {
+            // As user it requests
+            // As server it Destroys
         }
 
         public IEnumerable<Message> GetConsumingPipeIterator()
@@ -84,8 +97,8 @@ namespace Network {
                     if (flags.HasFlag(HeaderFlags.RESULT)) { // Request has to be responded with header with same packet ID and a result type appended to it
                         resultManager.HandleResult(header.m_packetId, msg);
                         continue;
-                    } else if (flags.HasFlag(HeaderFlags.CHANNEL)) {
-
+                    } else if (flags.HasFlag(HeaderFlags.CREATE_CHANNEL)) {
+                        
                     }
 
 
