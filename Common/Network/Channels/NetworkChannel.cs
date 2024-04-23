@@ -11,6 +11,7 @@ namespace Network.Channels {
     public class NetworkChannel {
         // list of ids that are linked to it? id as in user id
         private readonly uint m_channelId;
+        private string m_channelName;
         private readonly int m_timeoutInSeconds;
         private bool m_alive;
 
@@ -27,6 +28,7 @@ namespace Network.Channels {
         }
 
         public NetworkChannel(uint channelId, int timeoutInSeconds) {
+            m_channelName = "unknown";
             m_channelId = channelId;
             m_timeoutInSeconds = timeoutInSeconds;
             m_alive = true;
