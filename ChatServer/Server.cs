@@ -12,7 +12,7 @@ namespace ChatServer {
         readonly Socket m_listener;
         readonly List<UserClient> m_users;
         readonly IdPool m_pool;
-        TaskPool m_taskPool;
+        readonly TaskPool m_taskPool;
         bool m_isAlive = false;
 
         public XAddr GetAddress() => m_address;
@@ -32,8 +32,14 @@ namespace ChatServer {
         }
 
         private void Listen() {
+            Logger.WriteInfo($"Server listening to: {GetAddress()}");
             while (m_isAlive) {
+                Thread.Yield();
                 Socket remoteSocket = m_listener.Accept();
+
+                // Do login here.
+
+                //
 
                 UserClient user = new(m_pool.GetNewId(), remoteSocket, OnConnect, OnDisconnect, OnMessage);
             }
@@ -47,8 +53,9 @@ namespace ChatServer {
 
         public void OnDisconnect(UserClient user) {
             lock (m_users) {
-                m_users.Add(user);
+                m_users.Remove(user);
             }
+            m_pool.ReturnId(user.GetId());
         }
 
         public void OnMessage(Header header, Msg msg) { 

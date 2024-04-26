@@ -22,6 +22,8 @@ namespace Network.Channels {
         public delegate void NetworkReceiveDelegate(int id, Msg packet);
         public NetworkReceiveDelegate? NetworkReceive;
 
+        public delegate void ChannelDeletionDelegate();
+
         public event NetworkReceiveDelegate OnNetworkReceive {
             add => NetworkReceive += value;
             remove => NetworkReceive -= value;
@@ -34,7 +36,7 @@ namespace Network.Channels {
             m_alive = true;
         }
 
-        public void Send(Msg packet) {
+        public void Send(byte[] data) {
             throw new NotImplementedException();
         }
         public void Close() {

@@ -6,12 +6,13 @@ namespace Core {
         BlockingCollection<Action> taskBuff;
 
         public TaskPool(int threads) {
+            taskBuff = new();
             cts = new();
             for(int i = 0; i < threads; i++)
                 Task.Factory.StartNew(MainLoop, TaskCreationOptions.LongRunning);
             
         }
-
+        public void Stop() => cts.Cancel();
         public bool IsAlive() => !cts.IsCancellationRequested;
         public int TasksInQueue() => taskBuff.Count;
 

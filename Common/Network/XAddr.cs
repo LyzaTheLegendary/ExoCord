@@ -4,8 +4,8 @@ namespace Network {
     public struct XAddr {
         string m_host;
         
-        public IPAddress Address {  get => IPAddress.Parse(m_host.Split()[0]); }
-        public int Port { get => int.Parse(m_host.Split()[1]);  }
+        public IPAddress Address {  get => IPAddress.Parse(m_host.Split(':')[0]); }
+        public int Port { get => int.Parse(m_host.Split(':')[1]);  }
         public XAddr(string host) {
 
             if (!host.Contains(":"))

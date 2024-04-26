@@ -16,14 +16,14 @@ namespace Core {
                 if (line.StartsWith("//"))
                     continue;
 
-                if (!line.Contains(":="))
+                if (!line.Contains("=") || !line.Contains(':'))
                     continue;
 
                 string type = line.Split(":")[0].Trim();
-                string name = line.Split(":")[1].Trim();
+                string name = line.Split(':')[1].Split("=")[0].Trim();
                 string value = line.Split("=")[1].Trim();
 
-                switch(type){
+                switch (type){
                     case STRING:
                         m_settingsMap[name] = value;
                         break;
@@ -40,9 +40,9 @@ namespace Core {
             }
         }
 
-        public static T GetValue<T>(string key, object defaultValue) {
+        public static T GetValue<T>(string key, T defaultValue) {
             if (!m_settingsMap.TryGetValue(key, out object value)) {
-                return (T)defaultValue;
+                return defaultValue;
             }
 
             return (T)value;
