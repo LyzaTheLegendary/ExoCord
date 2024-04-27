@@ -157,7 +157,6 @@ namespace DataCore {
                     int newSize = size - fileDataRemaining;
 
                     FilePosition newPos = new FilePosition(position.GetStart() + newSize, position.GetEnd());
-
                     position.SetEnd(newPos.GetStart());
 
                     fs.Seek(newPos.GetStart(), SeekOrigin.Begin);
