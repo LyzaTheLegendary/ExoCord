@@ -5,9 +5,9 @@ namespace DataCore.Structures {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct FilePosition {
         [MarshalAs(UnmanagedType.I4)]
-        private readonly int start;
+        private int start;
         [MarshalAs(UnmanagedType.I4)]
-        private readonly int end;
+        private int end;
 
         public FilePosition(int start, int end) {
             this.start = start;
@@ -15,6 +15,8 @@ namespace DataCore.Structures {
         }
         public int GetStart() => start;
         public int GetEnd() => end;
+        public void SetEnd(int end) => this.end = end;
+        public void SetStart(int start) => this.start = start;
         public int CalcSize() => end - start;
     }
 }

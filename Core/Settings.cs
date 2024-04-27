@@ -41,7 +41,7 @@ namespace Core {
         }
 
         public static T GetValue<T>(string key, T defaultValue) {
-            if (!m_settingsMap.TryGetValue(key, out object value)) {
+            if (!m_settingsMap.TryGetValue(key, out object? value)) {
                 return defaultValue;
             }
 
