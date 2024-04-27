@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Networking.csproj" />
+    <Compile Remove="Network\Packets\Packets\ResultPacket.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Network\Packets\Packets\ResultPacket.cs" />
   </ItemGroup>
 
 </Project>

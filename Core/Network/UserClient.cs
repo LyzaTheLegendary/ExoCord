@@ -1,4 +1,5 @@
-﻿using Casting;
+﻿using Core;
+using Core.Network.Channels;
 using Network.Channels;
 using Packets;
 using System.Collections.Concurrent;
@@ -28,6 +29,8 @@ namespace Network {
         private readonly Socket m_socket;
         private readonly ResultManager resultManager = new();
         private readonly ChannelManager channelmanager = new();
+        
+        
         private bool IsServer { get => m_id != 0; }
 
         public UserClient(uint id, Socket remoteSocket, Action<UserClient> onConnect, Action<UserClient> onDisconnect, Action<Header, Msg> onMessage) {
@@ -92,8 +95,8 @@ namespace Network {
                     Header header = m_socket.ReceiveStruct<Header>();
 
                     if(!header.ValidateChecksum()) {
-                        
                         m_socket.Close();
+                        Logger.WriteWarn($"{GetAddress()} sent an invalid packet and has been disconnected.");
                         break;
                     }
 

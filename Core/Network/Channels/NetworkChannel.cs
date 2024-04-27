@@ -18,7 +18,7 @@ namespace Network.Channels {
         public int TimeOutInSeconds { get => m_timeoutInSeconds; }
         public bool Alive { get => m_alive; set => m_alive = value; }
 
-        public delegate void NetworkReceiveDelegate(int id, Msg packet);
+        public delegate void NetworkReceiveDelegate(ushort id, Msg packet);
         public NetworkReceiveDelegate? NetworkReceive;
 
         public delegate void ChannelDeletionDelegate();

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Network\ChannelManager.cs" />
+    <None Include="Network\Channels\ChannelManager.cs" />
     <None Include="Network\Packets\Packets\ResultPacket.cs" />
   </ItemGroup>
 

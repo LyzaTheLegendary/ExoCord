@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Common
+namespace Core.Pools
 {
     public class IdPool
     {
@@ -16,6 +16,7 @@ namespace Common
             id = m_highest++;
 
             return id;
+
         }
 
         public void ReturnId(uint id)

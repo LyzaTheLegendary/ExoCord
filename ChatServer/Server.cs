@@ -1,11 +1,12 @@
-﻿using Common;
-using Core;
+﻿using Core;
+using Core.Pools;
 using Network;
 using Packets;
 using System.Net;
 using System.Net.Sockets;
 
-namespace ChatServer {
+namespace ChatServer
+{
     public class Server {
 
         readonly XAddr m_address;
@@ -38,7 +39,7 @@ namespace ChatServer {
                 Socket remoteSocket = m_listener.Accept();
 
                 // Do login here.
-
+                
                 //
 
                 UserClient user = new(m_pool.GetNewId(), remoteSocket, OnConnect, OnDisconnect, OnMessage);
@@ -55,11 +56,14 @@ namespace ChatServer {
             lock (m_users) {
                 m_users.Remove(user);
             }
+
             m_pool.ReturnId(user.GetId());
         }
 
         public void OnMessage(Header header, Msg msg) { 
-        
+            // request
+            // somehow get the all the values associated to the user
+            // Session data, Ip address / THROTTLES / SPECIAL VALUES
         }
 
         public void StartSendQueue() {

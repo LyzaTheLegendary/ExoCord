@@ -1,8 +1,9 @@
-﻿using Casting;
+﻿using Core.Extensions;
 using System.Runtime.InteropServices;
 
-namespace Packets {
-    
+namespace Packets
+{
+
     [Flags] public enum HeaderFlags: ushort {
         NONE = 0,
         RESULT = 1,
