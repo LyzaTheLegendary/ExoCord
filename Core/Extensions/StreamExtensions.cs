@@ -13,7 +13,10 @@ namespace Core.Extensions {
 
         static public void WriteStruct<T> (this Stream stream, T structure) where T : struct 
             => stream.Write(structure.BitCast());
-        
+        static public void WriteString(this Stream stream, string str) {
+            stream.WriteStruct<int>(str.Length);
+            stream.Write(Encoding.UTF8.GetBytes(str));
+        }
         static public string ReadString(this Stream stream) {
             int strLen = stream.ReadStruct<int>();
 

@@ -6,7 +6,6 @@ namespace Comet {
         // This will calculate the time within the game
 
         double secondsPerCount;
-        double deltaTime;
 
         long prevCount = 0;
         long curCount;
@@ -16,10 +15,12 @@ namespace Comet {
             secondsPerCount = 1.0 / Stopwatch.Frequency;
             baseCount = Stopwatch.GetTimestamp();
         }
+
         public void Tick() {
             curCount = Stopwatch.GetTimestamp();
             prevCount = curCount;
         }
+
         public float GetDelta() => (float)((curCount - prevCount) / secondsPerCount);
     }
 }

@@ -13,5 +13,10 @@
                         Directory.CreateDirectory(s);
             }
         }
+        static public void CreateFileIfnotExist(string path) {
+            if (!File.Exists(path)) {
+                File.Create(path).Close();
+            }
+        }
     }
 }

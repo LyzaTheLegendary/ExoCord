@@ -1,11 +1,12 @@
-﻿using Core.Extensions;
+﻿using Core;
+using Core.Extensions;
 using Core.Files;
 using DataCore.Structures;
 using System.Collections.Concurrent;
 //NOTE: It will corrupt data OR crash if a file is overwritten
 
 namespace DataCore {
-    public static class DataCore {
+    public static class DataStorage {
         const string MAP_FILENAME = "MAP";
         const string DATA_FILENAME = "DATA";
         private static string directory = "/";
@@ -14,11 +15,13 @@ namespace DataCore {
 
         static public void Init(string directory) {
             FileHelper.CreateIfNotExistDirectory(directory);
-            DataCore.directory = directory;
+            DataStorage.directory = directory;
             fileMap.Clear();
             fragments.Clear();
 
             string filePath = Path.Combine(directory, MAP_FILENAME);
+
+
             if (!File.Exists(filePath))
                 return;
             else if (new FileInfo(filePath).Length == 0)
@@ -29,6 +32,7 @@ namespace DataCore {
                 PopulateFragmentsList(fs);
             }
 
+            Logger.WriteInfo($"Loaded files, {fileMap.Count} and {fragments.Count} fragments");
         }
         
         static public byte[]? FetchFile(string name) {
@@ -73,38 +77,47 @@ namespace DataCore {
             }
         }
 
+        //Broken fix later lol
         static public void RemoveFile(string name) {
-            if (!fileMap.TryGetValue(name, out DataInfo data)) {
+            if (!fileMap.TryRemove(name, out DataInfo data)) {
                 return;
             }
 
             foreach (FilePosition fragment in data.GetFragments())
                 fragments.Enqueue(fragment);
+
+            SaveMap();
         }
 
-        static private FileStream OpenDataReader() => File.Open(Path.Combine(directory, DATA_FILENAME), FileMode.Open, FileAccess.Read, FileShare.Read);
-        static private FileStream OpenDataWriter() => File.Open(Path.Combine(directory, DATA_FILENAME), FileMode.Open, FileAccess.Write, FileShare.Read);
+        static private FileStream OpenDataReader() => File.Open(Path.Combine(directory, DATA_FILENAME), FileMode.OpenOrCreate, FileAccess.Read, FileShare.Read);
+        static private FileStream OpenDataWriter() => File.Open(Path.Combine(directory, DATA_FILENAME), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
         static private void SaveMap() {
-            using (FileStream fs = File.Open(Path.Combine(directory, MAP_FILENAME), FileMode.Truncate, FileAccess.Write, FileShare.None)) {
+            using (FileStream fs = File.Open(Path.Combine(directory, MAP_FILENAME), FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) {
                 fs.WriteStruct<int>(fileMap.Count);
-
-                foreach(KeyValuePair<string,DataInfo> kvp in fileMap) {
+                foreach (KeyValuePair<string, DataInfo> kvp in fileMap) {
                     DataHeader header = new DataHeader {
                         fragments = (ushort)kvp.Value.FragmentCount(),
                         flags = kvp.Value.GetFlags(),
                     };
 
                     fs.WriteStruct<DataHeader>(header);
+                    fs.WriteString(kvp.Key);
+
+                    foreach(FilePosition fragment in kvp.Value.GetFragments()) {
+                        fs.WriteStruct<FilePosition>(fragment);
+                    }
                 }
 
                 fs.WriteStruct<int>(fragments.Count);
-                foreach(FilePosition position in fragments) {
+                foreach (FilePosition position in fragments) {
                     fs.WriteStruct<FilePosition>(position);
                 }
+
             }
         }
         static private void PopulateFileMap(FileStream fs) {
-            for (int i = 0; i < fs.ReadStruct<int>(); i++) {
+            int fileCount = fs.ReadStruct<int>();
+            for (int i = 0; i < fileCount; i++) {
                 DataHeader header = fs.ReadStruct<DataHeader>();
                 string filename = fs.ReadString();
                 List<FilePosition> positions = new(header.fragments);
@@ -116,7 +129,8 @@ namespace DataCore {
             }
         }
         static private void PopulateFragmentsList(FileStream fs) {
-            for(int i = 0;i < fs.ReadStruct<int>(); i++) 
+            int fragmentCount = fs.ReadStruct<int>();
+            for (int i = 0; i < fragmentCount; i++) 
                 fragments.Enqueue(fs.ReadStruct<FilePosition>());
             
         }
@@ -151,24 +165,40 @@ namespace DataCore {
 
 
                 FilePosition position = fragments.Dequeue();
-                int size = position.CalcSize();
+                int size = position.CalcSize(); // 3290658
                 // Calculate if the position bigger than data remaining and shrink the original position and slice it.
-                if( size > fileDataRemaining) {
-                    int newSize = size - fileDataRemaining;
+                if ( size > fileDataRemaining) {
+                    // retard code need to fix
+                    position.SetEnd(position.GetEnd() - fileDataRemaining);
 
-                    FilePosition newPos = new FilePosition(position.GetStart() + newSize, position.GetEnd());
-                    position.SetEnd(newPos.GetStart());
+                    FilePosition newPosition = new(position.GetEnd(), position.GetEnd() + fileDataRemaining);
+                    size = newPosition.CalcSize();
 
-                    fs.Seek(newPos.GetStart(), SeekOrigin.Begin);
-                    fs.Write(data.Skip(newSize).ToArray(), 0, newSize);
-                    
+                    fs.Seek(newPosition.GetStart(), SeekOrigin.Begin);
+                    fs.Write(data.Skip(fileWritten).ToArray(), 0, size);
 
+                    positions.Add(newPosition);
                     fragments.Enqueue(position);
-                    positions.Add(newPos);
 
-                    fileDataRemaining -= newSize;
-                    fileWritten += newSize;
+                    fileDataRemaining -= size;
+                    fileWritten += size;
+
                     continue;
+                    //int newSize = size - fileDataRemaining;
+
+                    //FilePosition newPos = new FilePosition(position.GetStart() + newSize, position.GetEnd());
+                    //position.SetEnd(newPos.GetStart());
+
+                    //fs.Seek(newPos.GetStart(), SeekOrigin.Begin);
+                    //fs.Write(data.Skip(newSize).ToArray(), 0, newSize);
+
+
+                    //fragments.Enqueue(position);
+                    //positions.Add(newPos);
+
+                    //fileDataRemaining -= newSize;
+                    //fileWritten += newSize;
+                    //continue;
                 }
                 
                 // Here we fill a fragment as normal
