@@ -1,22 +1,17 @@
 ﻿using Comet;
 using Core;
 using DataCore;
+using GraphicalUserInterface.Windowing;
 using System.Text;
 
 internal class Program {
+    // Idea smart cache, maybe load in the X amount most used resources
     public static void Main() {
         Logger.Init();
         DataStorage.Init("Resource");
-        //byte[] imageBytes = File.ReadAllBytes("image.jpeg");
-        //byte[] textBytes = File.ReadAllBytes("test.txt");
-
-        //DataStorage.AddFile("image", imageBytes);
-        //DataStorage.RemoveFile("image");
-
-        //DataStorage.AddFile("text", textBytes);
-
-        //Console.WriteLine(Encoding.UTF8.GetString(DataStorage.FetchFile("text")));
-
+#if DEBUG
+        Application.AddWindow(new DebugWindow());
+#endif
         Application.Run();
         Application.CleanUp();
         

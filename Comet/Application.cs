@@ -1,16 +1,21 @@
 ﻿using GraphicalUserInterface;
+using GraphicalUserInterface.Windowing;
 
 namespace Comet
 {
-    public static class Application {
-        private static WindowManager windowManager = new();
-        private static GlobalTime time = new();
-        public static void DoTick() => time.Tick();
-        public static GlobalTime GetTime() => time;
-        public static void Run() {
-            windowManager.Start().GetAwaiter().GetResult();
-        }
-        public static void CleanUp() {
+    static public class Application {
+        static private WindowManager windowManager = new();
+        static private GlobalTime time = new();
+        static public void DoTick() => time.Tick();
+        static public GlobalTime GetTime() => time;
+
+
+        static public void AddWindow(IWindow window) => windowManager.AddWindow(window);
+
+        static public void Run() 
+            => windowManager.Start().GetAwaiter().GetResult();
+
+        static public void CleanUp() {
 
         }
     }

@@ -168,7 +168,6 @@ namespace DataCore {
                 int size = position.CalcSize(); // 3290658
                 // Calculate if the position bigger than data remaining and shrink the original position and slice it.
                 if ( size > fileDataRemaining) {
-                    // retard code need to fix
                     position.SetEnd(position.GetEnd() - fileDataRemaining);
 
                     FilePosition newPosition = new(position.GetEnd(), position.GetEnd() + fileDataRemaining);

@@ -1,6 +1,8 @@
 ﻿using ClickableTransparentOverlay;
 using Comet;
+using GraphicalUserInterface.Windowing;
 using ImGuiNET;
+using System.Collections.Concurrent;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
@@ -14,21 +16,19 @@ namespace GraphicalUserInterface
 {
     public class WindowManager : Overlay
     {
-        float elapsedSeconds = 0;
-        int framecount = 0;
-        int framesPerSecond = 0;
+
         bool show = true;
-
         Vector2 lastWindowSize = default;
-
+        BlockingCollection<IWindow> windows = new();
         [DllImport("user32.dll")]
         static extern short GetAsyncKeyState(int key);
+
+        public void AddWindow(IWindow window) => windows.Add(window);
 
         protected override void Render()
         {
             GlobalTime time = Application.GetTime();
             time.Tick();
-            CalcFps(time);
             // Insert key
             if (GetAsyncKeyState(0x2D) != 0)
             {
@@ -42,14 +42,7 @@ namespace GraphicalUserInterface
                 Thread.Sleep(600);
                 return;
             }
-
-            RenderDebugWindow();
-
-            // This context should be in it's own window class!
-            ImGui.Begin($"Comet DEBUG", ImGuiWindowFlags.NoCollapse);
-
-            DefaultStyle();
-
+            
             Vector2 windowSize = ImGui.GetWindowSize();
             if (windowSize != lastWindowSize)
             {
@@ -57,49 +50,25 @@ namespace GraphicalUserInterface
                 lastWindowSize = windowSize;
             }
 
-
             OnUpdate(time);
-
-
-            // Draw view
-
-
-
-            ImGui.End();
+            foreach (IWindow window in windows) {
+                window.Render(time);
+            }
         }
+
         private void OnUpdate(GlobalTime time)
         {
-            // Update views components
+            foreach(IWindow window in windows) {
+                window.Update(time);
+            }
         }
 
         private void OnResize(float height, float width)
         {
-            Console.WriteLine($"{height}, {width}");
-
-        }
-
-
-        private void RenderDebugWindow()
-        {
-            ImGui.Begin("DebugWindow");
-            ImGui.Text("fps: " + framesPerSecond);
-            ImGui.End();
-        }
-        private void DefaultStyle()
-        {
-            ImGuiStylePtr style = ImGui.GetStyle();
-            style.WindowRounding = 8;
-        }
-        private void CalcFps(GlobalTime time)
-        {
-            framecount++;
-            if (time.TotalSeconds - elapsedSeconds >= 1.0f)
-            {
-                elapsedSeconds = time.TotalSeconds;
-
-                framesPerSecond = framecount;
-                framecount = 0;
+            foreach (IWindow window in windows) {
+                window.Resize(height, width);
             }
         }
+
     }
 }
