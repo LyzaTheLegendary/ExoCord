@@ -42,20 +42,20 @@ namespace Network {
             m_onDisconnect = onDisconnect;
             m_onMessage = onMessage;
 
+            m_onConnect.Invoke(this);
             Task.Factory.StartNew(Listen, TaskCreationOptions.LongRunning);
         }
 
         // Can throw exception is failed to connect!
-        public UserClient(XAddr host, Action<UserClient> onConnect, Action<UserClient> onDisconnect, Action<Header, Msg> onMessage) {
-            m_socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-            m_socket.Connect(host.Address, host.Port);
-            m_address = host;
+        public UserClient(Socket socket, Action<UserClient> onConnect, Action<UserClient> onDisconnect, Action<Header, Msg> onMessage) {
+            m_socket = socket;
+            m_address = new XAddr(socket.RemoteEndPoint!.ToString()!);
             m_id = 0;
 
             m_onConnect = onConnect;
             m_onDisconnect = onDisconnect;
             m_onMessage = onMessage;
-
+            m_onConnect.Invoke(this);
             Task.Factory.StartNew(Listen, TaskCreationOptions.LongRunning);
         }
 

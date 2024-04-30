@@ -23,7 +23,7 @@ namespace Packets
         public ushort m_flags;
         [MarshalAs(UnmanagedType.U4)]
         public uint m_packetId;  //   Used to keep track of a packet for results OR channels
-        [MarshalAs(UnmanagedType.U1)]
+        [MarshalAs(UnmanagedType.I4)]
         public int m_timeoutInSeconds; // Used to know how long a packet can expect a result 
 
         public Header(ushort len,  ushort id, ushort flags = 0, uint packetId = 0, int timeoutInSeconds = 0) {

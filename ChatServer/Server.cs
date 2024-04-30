@@ -1,4 +1,5 @@
 ﻿using Core;
+using Core.Extensions;
 using Core.Pools;
 using Network;
 using Packets;
@@ -19,7 +20,7 @@ namespace ChatServer
         public XAddr GetAddress() => m_address;
         public Server(XAddr address, int threads = 4) {
             m_address = address;
-
+            m_pool = new();
             m_taskPool = new TaskPool(threads);
             m_users = new List<UserClient>();
             IPEndPoint ep = new(address.Address, address.Port);
@@ -34,13 +35,31 @@ namespace ChatServer
 
         private void Listen() {
             Logger.WriteInfo($"Server listening to: {GetAddress()}");
+            m_isAlive = true;
             while (m_isAlive) {
-                Thread.Yield();
                 Socket remoteSocket = m_listener.Accept();
+                string username;
+                string password;
+                try {
+                    // Do login here.
+                    using (NetworkStream stream = new NetworkStream(remoteSocket, false)) {
+                        username = stream.ReadString();
+                        password = stream.ReadString();
+                        Logger.WriteInfo($"Received login with user: {username} pass: {password}");
+                        if (false) {
+                            stream.WriteStruct<int>((int)ResultCode.NOT_FOUND);
+                            stream.Flush();
+                            remoteSocket.Close();
+                            continue;
+                        }
 
-                // Do login here.
-                
-                //
+                        stream.WriteStruct<int>((int)ResultCode.SUCCESS);
+                        stream.Flush();
+                    }
+                } catch (Exception){
+                    remoteSocket.Close();
+                    continue;
+                }
 
                 UserClient user = new(m_pool.GetNewId(), remoteSocket, OnConnect, OnDisconnect, OnMessage);
             }
@@ -50,13 +69,14 @@ namespace ChatServer
             lock (m_users) {
                 m_users.Add(user);
             }
+            Logger.WriteInfo($"Connected from: {user.GetAddress()}");
         }
 
         public void OnDisconnect(UserClient user) {
             lock (m_users) {
                 m_users.Remove(user);
             }
-
+            Logger.WriteInfo($"Disconnected from: {user.GetAddress()}");
             m_pool.ReturnId(user.GetId());
         }
 

@@ -1,0 +1,1 @@
+test.translation = Hello world

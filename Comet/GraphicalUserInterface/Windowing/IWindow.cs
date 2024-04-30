@@ -5,6 +5,6 @@ namespace GraphicalUserInterface.Windowing {
         public void Resize(float height, float width);
         public void Update(GlobalTime time);
         public void Render(GlobalTime time);
-        public void Destroy(GlobalTime time);
+        public bool Enabled(GlobalTime time);
     }
 }

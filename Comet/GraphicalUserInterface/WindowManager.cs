@@ -1,5 +1,6 @@
 ﻿using ClickableTransparentOverlay;
 using Comet;
+using Core;
 using GraphicalUserInterface.Windowing;
 using ImGuiNET;
 using System.Collections.Concurrent;
@@ -23,7 +24,10 @@ namespace GraphicalUserInterface
         [DllImport("user32.dll")]
         static extern short GetAsyncKeyState(int key);
 
-        public void AddWindow(IWindow window) => windows.Add(window);
+        public void AddWindow(IWindow window) {
+            windows.Add(window);
+            Logger.WriteInfo($"Window added count: {windows.Count}");
+        }
 
         protected override void Render()
         {
@@ -52,6 +56,9 @@ namespace GraphicalUserInterface
 
             OnUpdate(time);
             foreach (IWindow window in windows) {
+                if (!window.Enabled(time)) {
+                    continue;
+                }
                 window.Render(time);
             }
         }
@@ -59,6 +66,7 @@ namespace GraphicalUserInterface
         private void OnUpdate(GlobalTime time)
         {
             foreach(IWindow window in windows) {
+
                 window.Update(time);
             }
         }

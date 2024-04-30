@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text;
 
 namespace Core {
 
@@ -9,8 +10,15 @@ namespace Core {
 
         private static ConcurrentDictionary<string, object> m_settingsMap = new();
 
-        public static void Init(string path) {
-            string[] lines = File.ReadAllLines(path);
+        public static void Init(string? path, byte[]? settingsFile = null) {
+            string[] lines;
+            if (path != null) {
+                lines = File.ReadAllLines(path);
+            } else {
+                if (settingsFile == null)
+                    throw new ArgumentException("Invalid function call, neither path nor filebytes have been filled!");
+                lines = Encoding.UTF8.GetString(settingsFile).Split("\n");
+            }
 
             foreach (string line in lines) {
                 if (line.StartsWith("//"))

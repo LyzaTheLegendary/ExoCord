@@ -1,4 +1,5 @@
-﻿using GraphicalUserInterface;
+﻿using Core;
+using GraphicalUserInterface;
 using GraphicalUserInterface.Windowing;
 
 namespace Comet
@@ -9,12 +10,11 @@ namespace Comet
         static public void DoTick() => time.Tick();
         static public GlobalTime GetTime() => time;
 
-
         static public void AddWindow(IWindow window) => windowManager.AddWindow(window);
-
-        static public void Run() 
-            => windowManager.Start().GetAwaiter().GetResult();
-
+        static public void Run() {
+            Logger.WriteInfo("Started WindowManager");
+            windowManager.Start().GetAwaiter().GetResult();
+        }
         static public void CleanUp() {
 
         }
